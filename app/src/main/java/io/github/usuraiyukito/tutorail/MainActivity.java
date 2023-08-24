@@ -9,39 +9,65 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
-    private Boolean lastToggleClickedIs;
     private Boolean imageClick = true;
     private Drawable drawable;
     private String text;
+    private Boolean showShorthand = true;
+    private Boolean clicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initialization();
+
         Button changeButton = findViewById(R.id.changeButton);
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
         ImageView imageView = findViewById(R.id.imageView);
 
-        changeButton.setOnClickListener(view -> {
-            setRandomShorthand();
-            setToggleText();
-            hideShorthand();
+        FloatingActionButton click = findViewById(R.id.floatingActionButton);
+
+        click.setOnClickListener(view ->{
+            if(showShorthand) {
+                click.setImageResource(R.drawable.baseline_text_fields_24);
+                toggleButton.setChecked(true);
+                imageView.setImageResource(R.drawable.ic_launcher_foreground);
+                imageClick = true;
+            }else {
+                click.setImageResource(R.drawable.baseline_edit_24);
+                toggleButton.setChecked(false);
+                imageView.setImageDrawable(drawable);
+                imageClick = false;
+            }
+
+            clicked = true;
+            showShorthand = !showShorthand;
         });
 
-        toggleButton.setOnClickListener(view -> lastToggleClickedIs = true);
+
+        changeButton.setOnClickListener(view -> {
+            if(clicked) {
+                setRandomShorthand();
+                setToggleText();
+                hideShorthand();
+                clicked = false;
+            }
+        });
+
+        toggleButton.setOnClickListener(view -> clicked = true);
 
         imageView.setOnClickListener(view -> {
             if(imageClick) imageView.setImageDrawable(drawable);
             else imageView.setImageResource(R.drawable.ic_launcher_foreground);
 
             imageClick = !imageClick;
-            lastToggleClickedIs = false;
+            clicked = true;
         });
     }
 
@@ -51,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
         ImageView imageView = findViewById(R.id.imageView);
 
-        imageView.setImageResource(R.drawable.ic_launcher_foreground);
+        imageView.setImageDrawable(drawable);
 
         toggleButton.setChecked(false);
         setToggleText();
@@ -69,11 +95,7 @@ public class MainActivity extends AppCompatActivity {
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
         ImageView imageView = findViewById(R.id.imageView);
 
-        if(lastToggleClickedIs.equals(null)){
-            if(lastToggleClickedIs)toggleButton.setChecked(false);
-            imageView.setImageResource(R.drawable.ic_launcher_foreground);
-        }
-        else if(lastToggleClickedIs){
+        if(showShorthand){
             imageClick = false;
             toggleButton.setChecked(false);
             imageView.setImageDrawable(drawable);
